@@ -47,7 +47,24 @@ class UserDashboard extends Component {
                 <div class="container">
                     <h2>User Dashboard</h2>
                 </div>
-                
+                <div className={classes.root}>
+                    <Grid container spacing={3}>
+                        <Grid item sm={12} md={6}>
+                            <Paper className={classes.paper}>
+                                <Typography variant="h4" className={classes.title}>
+                                        Simulation
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                        <Grid item sm={12} md={6}>
+                            <Paper className={classes.paper}>
+                                <Typography variant="h4" className={classes.title}>
+                                        Billing 
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                </div>
             </div> 
         )
     }
