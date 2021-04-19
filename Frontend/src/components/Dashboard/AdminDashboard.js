@@ -16,12 +16,16 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { withStyles } from '@material-ui/core/styles';
 import NumberFormat from 'react-number-format';
 import AdminNavbar from '../Navbar/AdminNavbar';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { userSignup } from '../../redux/actions/signupAction';
 import backendConfig from "../../backendConfig";
 
 const useStyles = (theme) => ({
     root: {
         flexGrow: 1,
         margin: theme.spacing(1),
+        marginLeft: theme.spacing(25)
     },
     button: {
         margin: theme.spacing(1),
@@ -56,8 +60,24 @@ class AdminDashboard extends Component {
     constructor(props){
         super(props);
         this.state = {  
+            open_create : false,
+            open_billing : false,
+            open_delete : false,
             userlist: [],
+            email : "",
+            username : "",
+            password : "",
         }
+        this.handleClickOpenCreate = this.handleClickOpenCreate.bind(this);
+        this.handleCloseCreate = this.handleCloseCreate.bind(this);
+        this.handleClickOpenBilling = this.handleClickOpenBilling.bind(this);
+        this.handleCloseBilling = this.handleCloseBilling.bind(this);
+        this.handleClickOpenDelete = this.handleClickOpenDelete.bind(this);
+        this.handleCloseDelete = this.handleCloseDelete.bind(this);
+        this.validateInput = this.validateInput.bind(this);
+        this.emailChangeHandler = this.emailChangeHandler.bind(this);
+        this.usernameChangeHandler = this.usernameChangeHandler.bind(this);
+        this.passwordChangeHandler = this.passwordChangeHandler.bind(this);
         this.handleCreate = this.handleCreate.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleBilling = this.handleBilling.bind(this);
@@ -71,13 +91,64 @@ class AdminDashboard extends Component {
                 console.log(err.response);
             });
     }
+    handleClickOpenCreate = () => {this.setState({open_create : true})};
+    handleCloseCreate = () => {this.setState({open_create : false})};
+    handleClickOpenBilling = () => {this.setState({open_billing : true})};
+    handleCloseBilling = () => {this.setState({open_billing : false})};
+    handleClickOpenDelete = () => {this.setState({open_delete : true})};
+    handleCloseDelete = () => {this.setState({open_delete : false})};
+    usernameChangeHandler = (e) => {
+        this.setState({username : e.target.value})
+    };
+    emailChangeHandler = (e) => {
+        this.setState({email : e.target.value})
+    };
+    passwordChangeHandler = (e) => {
+        this.setState({password : e.target.value})
+    }
+    validateInput = () => {
+        const inputs = document.querySelectorAll('input');
+        var emailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+        const error = document.getElementById('errorMsg');
+        let isValid = true;
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].value == ""){
+                error.textContent = "Please enter the " + (inputs[i].name || "Role");
+                isValid = false;
+                break;
+            } 
+            else if (!inputs[0].value.match(emailFormat)){
+                error.textContent = "The email format is invalid, please use user@google format";
+                isValid = false;
+            }
+        }
+        return isValid;
+    }
     handleCreate = (event) => {
         event.preventDefault();//stop refresh
-        
+        if (this.validateInput()){
+            const data = {
+                username : this.state.username,
+                email : this.state.email,
+                password : this.state.password
+            }
+            this.props.userSignup(data);
+        }
     }
     handleDelete = (event) => {
         event.preventDefault();//stop refresh
-        
+        const data = {
+            email : localStorage.getItem("UserEmail")
+        }
+        axios.post(`${backendConfig}/admindashboard/delete`, data)
+            .then((response) => {
+                if (response.status === 200){
+                    window.location.href = "/admin-dashboard";
+                }
+            })
+            .catch(err => {
+                console.log(err.response);
+            });
     }
     handleBilling = (event) => {
         event.preventDefault();//stop refresh
@@ -89,6 +160,9 @@ class AdminDashboard extends Component {
         console.log(this.state);
         //if not logged in go to login page
         let redirectVar = null;
+        if(this.props.signup === "Success_Signup"){ 
+            window.location.href = "/admin-dashboard"
+        }
         if(!localStorage.getItem('email')){
             redirectVar = <Redirect to= "/"/>
         }
@@ -103,18 +177,22 @@ class AdminDashboard extends Component {
                     <Grid container spacing={1}>
                         <Grid item xs={12} spacing={1}>
                             <Grid container spacing={5}>
-                                <Grid item xs={5}>
-                                    User Tracking<br/>
-                                    Robot Tracking<br/>
-                                    ...
+                                <Grid item xs={4}>
+                                    <Typography variant="h6" className={classes.title}>
+                                        User Tracking
+                                    </Typography>
+                                    <Typography className={classes.message}>There are {this.state.userlist.length} registered users</Typography><br/><br/>
+                                    <Typography variant="h6" className={classes.title}>
+                                        Robot Tracking
+                                    </Typography>
+
                                 </Grid>
                                 <Grid item xs={7}>
                                     <Toolbar>
                                         <Typography variant="h6" className={classes.title}>
                                             Registered Users
                                         </Typography>
-                                        <Button variant="contained" size="large" color="primary" onClick={this.handleCreate}>Create a user</Button>
-                                        <div className="error" id="errorMsg" />  
+                                        <Button variant="contained" size="large" color="primary" onClick={this.handleClickOpenCreate}>Create a user</Button>
                                     </Toolbar>
                                     <List className={classes.list}>
                                         {!this.state.userlist.length && <Typography className={classes.message}>There is no user yet...</Typography>}
@@ -122,21 +200,26 @@ class AdminDashboard extends Component {
                                             return (
                                                 <Accordion>
                                                     <AccordionDetails>
-                                                        <div className={classes.column}>
-                                                            <Typography variant="h6" className={classes.detail}>User ID: {listing.iduser}</Typography>
-                                                        </div>
-                                                        <div className={classes.column}>
+                                                    <Grid container spacing={3}>
+                                                        <Grid item xs={4}>
                                                             <Typography variant="h6" className={classes.detail}>User Name: {listing.username}</Typography>
-                                                        </div>
-                                                        <div className={classes.column} />
-                                                        <div className={classes.column}>
+                                                        </Grid>
+                                                        <Grid item xs={4}>
                                                             <Typography variant="h6" className={classes.detail}>User Email: {listing.email}</Typography>
-                                                        </div>
-                                                        <div className={classes.column} />
-                                                        <div className={classes.column}>
-                                                            <Button variant="contained" size="large" color="primary" onClick={this.handleDelete}>Delete</Button>
-                                                            <Button variant="contained" size="large" color="primary" onClick={this.handleBilling}>Billing</Button>
-                                                        </div>
+                                                        </Grid>
+                                                        <Grid item xs={2}>
+                                                            <Button variant="contained" size="large" color="primary" onClick={()=>{
+                                                                    localStorage.setItem("UserEmail", listing.email);
+                                                                    this.handleClickOpenDelete();
+                                                                }}>Delete</Button>
+                                                        </Grid>
+                                                        <Grid item xs={2}> 
+                                                            <Button variant="contained" size="large" color="primary" onClick={()=>{
+                                                                    localStorage.setItem("UserBilling", listing.billing);
+                                                                    this.handleClickOpenBilling();
+                                                                }}>Billing</Button>
+                                                        </Grid>
+                                                    </Grid>
                                                     </AccordionDetails><br/>
                                                 </Accordion>
                                             )}
@@ -144,7 +227,7 @@ class AdminDashboard extends Component {
                                     </List>
                                     <Toolbar>
                                         <Typography variant="h6" className={classes.title}>
-                                            Messages from user
+                                            Messages from users
                                         </Typography>
                                     </Toolbar>
                                     <List className={classes.list}>
@@ -155,9 +238,89 @@ class AdminDashboard extends Component {
                         </Grid>
                     </Grid>
                 </div> 
+                <Dialog fullWidth maxWidth="xs" open={this.state.open_create} onClose={this.handleCloseCreate} aria-labelledby="form-dialog-title">
+                    <DialogTitle>Create a new user</DialogTitle>
+                    <DialogContent>
+                        <Form>
+                            <Form.Group controlId="formEmail">
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control 
+                                    type="email" 
+                                    name="email"
+                                    value={this.state.email}
+                                    onChange={this.emailChangeHandler}
+                                    placeholder="Enter the Email" />
+                            </Form.Group>
+                            <Form.Group controlId="formUsername">
+                                <Form.Label>Username</Form.Label>
+                                <Form.Control 
+                                    type="text" 
+                                    name="username"
+                                    value={this.state.username}
+                                    onChange={this.usernameChangeHandler}
+                                    placeholder="Enter the Username" />
+                            </Form.Group>
+                            <Form.Group controlId="formPassword">
+                                <Form.Label>Password</Form.Label>
+                                <Form.Control 
+                                    type="password" 
+                                    name="Password"
+                                    value={this.state.password}
+                                    onChange={this.passwordChangeHandler}
+                                    placeholder="Enter the Password" />
+                            </Form.Group>
+                        </Form>
+                        <div className="error" id="errorMsg" /> 
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleCloseCreate} color="primary">Cancel</Button>
+                        <Button onClick={this.handleCreate} color="primary">Create</Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog fullWidth maxWidth="xs" open={this.state.open_delete} onClose={this.handleCloseDelete} aria-labelledby="form-dialog-title">
+                    <DialogTitle>Confirmation</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText className={classes.dialogtext}>
+                            Are you sure to delete this user?
+                        </DialogContentText> 
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleCloseDelete} color="primary">Cancel</Button>
+                        <Button onClick={this.handleDelete} color="primary">Yes</Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog fullWidth maxWidth="xs" open={this.state.open_billing} onClose={this.handleCloseBilling} aria-labelledby="form-dialog-title">
+                    <DialogTitle>Send Billing to the user</DialogTitle>
+                    <DialogContent>
+                        <Form>
+                            <Form.Group controlId="formAmount">
+                                <Form.Label>Amount</Form.Label>
+                                <DialogContentText className={classes.dialogtext}>
+                                    The billing amount is ${localStorage.getItem("UserBilling")}
+                                </DialogContentText> 
+                            </Form.Group>
+                        </Form>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleCloseBilling} color="primary">Cancel</Button>
+                        <Button onClick={this.handleBilling} color="primary">Send</Button>
+                    </DialogActions>
+                </Dialog>
             </div> 
         )
     }
 }
 
-export default withStyles(useStyles)(AdminDashboard);
+AdminDashboard.propTypes = {
+    userSignup: PropTypes.func.isRequired,
+    signup: PropTypes.object.isRequired
+}
+
+const mapStateToProps = state => { 
+    return ({
+        signup: state.signup.signup
+    })
+};
+
+//export Login Component
+export default connect(mapStateToProps, { userSignup })(withStyles(useStyles)(AdminDashboard));

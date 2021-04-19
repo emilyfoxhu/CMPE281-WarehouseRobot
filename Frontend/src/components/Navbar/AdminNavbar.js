@@ -51,10 +51,6 @@ class AdminNavbar extends Component {
             window.location.href = "/admin-dashboard"
         }
 
-        const handleProfile = (event) => {
-            event.preventDefault();//stop refresh
-            window.location.href = "/profile"
-        }
         //handle logout to destroy the cookie
         const handleLogOut = (event) => {
             event.preventDefault();//stop refresh
@@ -79,7 +75,6 @@ class AdminNavbar extends Component {
                             <Typography variant="h6" className={classes.title}>
                                 Warehouse Robot
                             </Typography>
-                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleProfile}>Profile</Button>
                             <Button variant="contained" size="large" color="primary" className={classes.button1} onClick={handleLogOut}>Log out</Button>
                         </Toolbar>
                     </AppBar>

@@ -17,8 +17,8 @@ app.post('/', function(req,res){
         }
         else{
             db.query(
-                "INSERT INTO user (username, password, email) VALUES (?,?,?)",
-                [username, password, email],
+                "INSERT INTO user (username, password, email, phone, billing) VALUES (?,?,?,?,?)",
+                [username, password, email, "", 0],
                 (err, result) => {
                     if (err){
                         res.status(500).end("Error");

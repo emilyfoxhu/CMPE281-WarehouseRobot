@@ -22,4 +22,23 @@ app.get('/users', (req, res) => {
     );
 });
 
+app.post('/delete', (req, res) => {
+    console.log("Inside delete a user Request");
+    console.log("Req Body : ", req.body);
+    const email = req.body.email;
+    console.log(email);
+    db.query(
+        "DELETE FROM user WHERE email = ?;", email,
+        (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(500).end("Error");
+            }
+            if (result) {
+                res.status(200).end("Success_Delete");
+            }
+        }
+    );
+});
+
 module.exports = app;
