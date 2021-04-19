@@ -4,6 +4,7 @@ const login = require("./routes/login");
 const signup = require("./routes/signup");
 const profile = require("./routes/profile");
 const images = require("./routes/images");
+const message = require("./routes/message");
 const userdashboard = require("./routes/userdashboard");
 const admindashboard = require("./routes/admindashboard");
 
@@ -11,6 +12,7 @@ app.use("/login", login);
 app.use("/signup", signup);
 app.use("/profile", profile);
 app.use("/images", images);
+app.use("/message", message);
 app.use("/userdashboard", userdashboard);
 app.use("/admindashboard", admindashboard);
 

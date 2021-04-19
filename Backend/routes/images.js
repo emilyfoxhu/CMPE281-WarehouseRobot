@@ -5,14 +5,6 @@ const fs = require('fs');
 const db = require('../utils/MysqlConfig');
 const multer = require('multer');
 
-//get user image name
-app.get('/image/:email', (req, res) => {
-    console.log("Inside user profile image name get");
-    console.log("Req Body : ", req.body);
-    const email = req.params.email;
-    
-});
-
 //get image path
 app.get('/:user_image', (req, res) => {
     console.log("Inside user profile image get");
@@ -44,7 +36,29 @@ app.post("/:email", (req, res) => {
     console.log("Inside images post Request");
     console.log("Req Body : ", req.body);
     const email = req.params.email;
-    
+    useruploads(req, res, function (err) {
+        if (!err) {
+            db.query(
+                "UPDATE user SET image=? WHERE email=?;",
+                [req.file.filename, email],
+                (err, result) => {
+                    if (err) {
+                        res.status(500).end("Error");
+                    }
+                    if (result) {
+                        res.writeHead(200, {
+                        'Content-Type': 'text/plain'
+                        });
+                        res.end(req.file.filename);
+                        console.log("user profile image success upload");
+                    }
+                }
+            );
+        }
+        else {
+            console.log('Error');
+        }
+    })
 });
 
 module.exports = app;

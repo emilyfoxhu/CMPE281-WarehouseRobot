@@ -4,6 +4,7 @@ import LandingPage from './LandingPage/LandingPage';
 import UserDashboard from './Dashboard/UserDashboard';
 import AdminDashboard from './Dashboard/AdminDashboard';
 import Profile from './Profile/Profile';
+import Help from './Message/Help';
 
 //Create a Main Component
 const Main = () => {
@@ -21,7 +22,9 @@ const Main = () => {
                 <Route path="/profile">
                     <Profile/>
                 </Route>
-                
+                <Route path="/help">
+                    <Help/>
+                </Route>
                 {/*Root path should be put at last*/}
                 <Route path="/">
                     <LandingPage/>

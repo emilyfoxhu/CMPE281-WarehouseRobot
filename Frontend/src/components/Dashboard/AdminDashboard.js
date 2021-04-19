@@ -64,6 +64,7 @@ class AdminDashboard extends Component {
             open_billing : false,
             open_delete : false,
             userlist: [],
+            messagelist: [],
             email : "",
             username : "",
             password : "",
@@ -81,11 +82,24 @@ class AdminDashboard extends Component {
         this.handleCreate = this.handleCreate.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleBilling = this.handleBilling.bind(this);
+        this.handleMessage = this.handleMessage.bind(this);
     }  
     componentDidMount(){ 
         axios.get(`${backendConfig}/admindashboard/users`)
             .then((response) => {
                 this.setState({userlist : response.data})
+            })
+            .catch(err => {
+                console.log(err.response);
+            });
+        axios.get(`${backendConfig}/message`)
+            .then((response) => {
+                let messagelist = response.data;
+                let messagearray = [];
+                messagelist.map((listing) => {
+                    if (listing.message){messagearray.push(listing);}
+                })
+                this.setState({messagelist : messagearray})
             })
             .catch(err => {
                 console.log(err.response);
@@ -154,7 +168,21 @@ class AdminDashboard extends Component {
         event.preventDefault();//stop refresh
         
     }
-
+    handleMessage= (event) => {
+        event.preventDefault();//stop refresh
+        const data = {
+            email : localStorage.getItem("UserMessage")
+        }
+        axios.post(`${backendConfig}/message/delete`, data)
+            .then((response) => {
+                if (response.status === 200){
+                    window.location.href = "/admin-dashboard";
+                }
+            })
+            .catch(err => {
+                console.log(err.response);
+            });
+    }
     render(){
         const { classes } = this.props;
         console.log(this.state);
@@ -185,6 +213,8 @@ class AdminDashboard extends Component {
                                     <Typography variant="h6" className={classes.title}>
                                         Robot Tracking
                                     </Typography>
+                                    <Typography className={classes.message}>There are 0 registered robots</Typography><br/><br/>
+                                    <Typography className={classes.message}>There are 0 running robots</Typography><br/><br/>
 
                                 </Grid>
                                 <Grid item xs={7}>
@@ -208,15 +238,15 @@ class AdminDashboard extends Component {
                                                             <Typography variant="h6" className={classes.detail}>User Email: {listing.email}</Typography>
                                                         </Grid>
                                                         <Grid item xs={2}>
-                                                            <Button variant="contained" size="large" color="primary" onClick={()=>{
+                                                            <Button variant="contained" size="large" color="primary" onClick={(event)=>{
                                                                     localStorage.setItem("UserEmail", listing.email);
-                                                                    this.handleClickOpenDelete();
+                                                                    this.handleClickOpenDelete(event);
                                                                 }}>Delete</Button>
                                                         </Grid>
                                                         <Grid item xs={2}> 
-                                                            <Button variant="contained" size="large" color="primary" onClick={()=>{
+                                                            <Button variant="contained" size="large" color="primary" onClick={(event)=>{
                                                                     localStorage.setItem("UserBilling", listing.billing);
-                                                                    this.handleClickOpenBilling();
+                                                                    this.handleClickOpenBilling(event);
                                                                 }}>Billing</Button>
                                                         </Grid>
                                                     </Grid>
@@ -231,7 +261,32 @@ class AdminDashboard extends Component {
                                         </Typography>
                                     </Toolbar>
                                     <List className={classes.list}>
-                                                                                 
+                                        {!this.state.messagelist.length && <Typography className={classes.message}>There is message from users yet...</Typography>}
+                                        {this.state.messagelist.map((listing, index) => {
+                                            return (
+                                                <Accordion>
+                                                    <AccordionDetails>
+                                                    <Grid container spacing={3}>
+                                                        <Grid item xs={3}>
+                                                            <Typography variant="h6" className={classes.detail}>User Name: {listing.username}</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={3}>
+                                                            <Typography variant="h6" className={classes.detail}>User Email: {listing.email}</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <Typography variant="h6" className={classes.detail}>Message: {listing.message}</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={2}> 
+                                                            <Button variant="contained" size="large" color="primary" onClick={(event)=>{
+                                                                    localStorage.setItem("UserMessage", listing.email);
+                                                                    this.handleMessage(event);
+                                                                }}>Done</Button>
+                                                        </Grid>
+                                                    </Grid>
+                                                    </AccordionDetails><br/>
+                                                </Accordion>
+                                            )}
+                                        )}                                            
                                     </List>
                                 </Grid>
                             </Grid>
