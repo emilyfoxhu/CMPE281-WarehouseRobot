@@ -16,6 +16,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { withStyles } from '@material-ui/core/styles';
 import NumberFormat from 'react-number-format';
 import UserNavbar from '../Navbar/UserNavbar';
+import backendConfig from "../../backendConfig";
 
 const useStyles = (theme) => ({
     
@@ -25,12 +26,18 @@ class UserDashboard extends Component {
     constructor(props){
         super(props);
         this.state = {  
-            
+            usageList : []
         }
         
     }  
     componentDidMount(){ 
-        
+        axios.get(`${backendConfig}/userdashboard/usage`)
+            .then((response) => {
+                this.setState({usageList : response.data})
+            })
+            .catch(err => {
+                console.log(err.response);
+            });
     }
     
     render(){
@@ -61,6 +68,15 @@ class UserDashboard extends Component {
                                 <Typography variant="h4" className={classes.title}>
                                         Billing 
                                 </Typography>
+                                {this.state.usageList.map((listing, index) => {
+                                    return (
+                                        <List>
+                                            <Typography variant="h6" className={classes.detail}>Month: {listing.month}-{listing.year}</Typography>
+                                            <Typography variant="h6" className={classes.detail}>Usage: {listing.duration_hours} hours</Typography>
+                                        </List>
+                                        
+                                    )}
+                                )}
                             </Paper>
                         </Grid>
                     </Grid>
