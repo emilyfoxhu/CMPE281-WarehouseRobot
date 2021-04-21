@@ -18,6 +18,12 @@ import NumberFormat from 'react-number-format';
 import UserNavbar from '../Navbar/UserNavbar';
 import backendConfig from "../../backendConfig";
 import {Bar, defaults} from "react-chartjs-2";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 const useStyles = (theme) => ({
     
@@ -40,10 +46,37 @@ const useStyles = (theme) => ({
         padding: '30px 30px 30px 30px'
     },
 
+    panelTitle:{
+        marginBottom: '20px',
+    },
+
     chartContainer:{
         marginTop: '30px'
-    }
+    },
+
+    button:{
+        fontSize: '15px'
+    },
+
+    instancesContainer: {
+        marginTop: '20px'
+    },
+
+    tablecell: {
+        fontSize: '15px'
+    },
+
 });
+
+function createData(id, runtime) {
+    return { id, runtime};
+  }
+  
+  const rows = [
+    createData('WHR23546', 8),
+    createData('WHR42384', 24),
+    createData('WHR12973', 12),
+  ];
 
 class UserDashboard extends Component {
     constructor(props){
@@ -110,17 +143,43 @@ class UserDashboard extends Component {
                     <Grid container spacing={0}>
                         <Grid item sm={12} md={6}>
                             <Paper className={classes.paper} elevation={3}>
-                                <Typography variant="h2">
+                                <Typography variant="h2" className={classes.panelTitle}>
                                         Simulation
                                 </Typography>
+                                <div>
+                                    <Button variant="contained" size="large" color="primary" className={classes.button}>Start a warehouse robot</Button>
+                                </div>
+                                <div className={classes.instancesContainer}>
+                                    <Typography variant="h4">Running Instances:</Typography>
+                                    <br />
+                                    <TableContainer component={Paper}>
+                                        <Table className={classes.table} aria-label="simple table">
+                                            <TableHead>
+                                            <TableRow>
+                                                <TableCell className={classes.tablecell}>Robot ID</TableCell>
+                                                <TableCell align="right" className={classes.tablecell}>Runtime(hours)</TableCell>
+                                            </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                            {rows.map((row) => (
+                                                <TableRow key={row.name}>
+                                                <TableCell component="th" scope="row" className={classes.tablecell}>
+                                                    {row.id}
+                                                </TableCell>
+                                                <TableCell align="right" className={classes.tablecell}>{row.runtime}</TableCell >
+                                                </TableRow>
+                                            ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </div>
                             </Paper>
                         </Grid>
                         <Grid item sm={12} md={6}>
                             <Paper className={classes.paper} elevation={3}>
-                                <Typography variant="h2">
+                                <Typography variant="h2" className={classes.panelTitle}>
                                         Billing 
                                 </Typography>
-                                <br />
                                 {/* {this.state.usageList.map((listing, index) => {
                                     return (
                                         <List>
