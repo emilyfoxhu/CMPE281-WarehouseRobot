@@ -17,7 +17,7 @@ import { withStyles } from '@material-ui/core/styles';
 import NumberFormat from 'react-number-format';
 import UserNavbar from '../Navbar/UserNavbar';
 import backendConfig from "../../backendConfig";
-import {Pie, defaults} from "react-chartjs-2";
+import {Bar, defaults} from "react-chartjs-2";
 
 const useStyles = (theme) => ({
     
@@ -40,6 +40,8 @@ class UserDashboard extends Component {
                 console.log(err.response);
             });
     }
+
+    
     
     render(){
         const { classes } = this.props;
@@ -48,28 +50,55 @@ class UserDashboard extends Component {
         if(!localStorage.getItem('email')){
             redirectVar = <Redirect to= "/"/>
         }
+
+        let numMonths = 3;
+        let feePerHour = 0.06;
+        let graphLabel = [];
+        let graphData = [];
+
+
+        for(let i = 0; i < numMonths; i++){
+            let d = new Date();
+            d.setMonth(d.getMonth() - i);
+            
+            var monthRecord = this.state.usageList.filter((record) => {
+                return record.month == d.getMonth() + 1 && record.year == d.getFullYear();
+            })
+
+            graphLabel.unshift(d.toLocaleString('default', {month:'long'}));
+
+            if(monthRecord.length != 0){
+                graphData.unshift(monthRecord[0].duration_hours * feePerHour);
+            }else{
+                graphData.unshift(0);
+            }
+
+        }
+
+    
         return(
             <div>
                 {redirectVar}
                 <UserNavbar/>
-                <div class="container">
+                <div className="container">
                     <h2>User Dashboard</h2>
                 </div>
-                <div className={classes.root}>
+                <div>
                     <Grid container spacing={3}>
                         <Grid item sm={12} md={6}>
-                            <Paper className={classes.paper}>
+                            <Paper>
                                 <Typography variant="h4" className={classes.title}>
                                         Simulation
                                 </Typography>
                             </Paper>
                         </Grid>
                         <Grid item sm={12} md={6}>
-                            <Paper className={classes.paper}>
-                                <Typography variant="h4" className={classes.title}>
+                            <Paper>
+                                <Typography variant="h2">
                                         Billing 
                                 </Typography>
-                                {this.state.usageList.map((listing, index) => {
+                                <br />
+                                {/* {this.state.usageList.map((listing, index) => {
                                     return (
                                         <List>
                                             <Typography variant="h6" className={classes.detail}>Month: {listing.month}-{listing.year}</Typography>
@@ -77,61 +106,61 @@ class UserDashboard extends Component {
                                         </List>
                                         
                                     )}
-                                )}
+                                )} */}
+
+                                <div>
+                                    <Typography variant="h4">Current month-to-date balance for {graphLabel[graphLabel.length-1]}</Typography>
+                                    <Typography variant="h3">${graphData[graphData.length-1]}</Typography>
+                                </div>
+                                
+                                <div>
+                                    <Bar
+                                        data = {{
+                                            labels: graphLabel,
+                                            datasets: [
+                                                {
+                                                // label: '# of Votes',
+                                                data: graphData,
+                                                backgroundColor: [
+                                                    'rgba(255, 99, 132, 0.2)',
+                                                    'rgba(54, 162, 235, 0.2)',
+                                                    'rgba(255, 206, 86, 0.2)',
+                                                ],
+                                                borderColor: [
+                                                    'rgba(255, 99, 132, 1)',
+                                                    'rgba(54, 162, 235, 1)',
+                                                    'rgba(255, 206, 86, 1)',
+                                                ],
+                                                borderWidth: 1,
+                                                },
+                                            ],
+                                            }}
+                                            height={300}
+                                            width={500}
+                                            options={{
+                                            maintainAspectRatio: false,
+                                            scales: {
+                                                yAxes: [
+                                                {
+                                                    ticks: {
+                                                    beginAtZero: true,
+                                                    },
+                                                },
+                                                ],
+                                            },
+                                            legend: {
+                                                labels: {
+                                                fontSize: 25,
+                                                },
+                                            },
+                                        }}
+                                    />
+                                </div>
                             </Paper>
                         </Grid>
                     </Grid>
                 </div>
 
-                <div>
-                    <Pie
-                        data = {{
-                            label: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                            datasets: [
-                                {
-                                label: '# of votes',
-                                data: [12, 19, 3, 5, 2, 3],
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.2)',
-                                    'rgba(54, 162, 235, 0.2)',
-                                    'rgba(255, 206, 86, 0.2)',
-                                    'rgba(75, 192, 192, 0.2)',
-                                    'rgba(153, 102, 255, 0.2)',
-                                    'rgba(255, 159, 64, 0.2)',
-                                ],
-                                borderColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgba(153, 102, 255, 1)',
-                                    'rgba(255, 159, 64, 1)',
-                                ],
-                                borderWidth: 1,
-                                },
-                            ],
-                            }}
-                            height={400}
-                            width={600}
-                            options={{
-                            maintainAspectRatio: false,
-                            scales: {
-                                yAxes: [
-                                {
-                                    ticks: {
-                                    beginAtZero: true,
-                                    },
-                                },
-                                ],
-                            },
-                            legend: {
-                                labels: {
-                                fontSize: 25,
-                                },
-                            },
-                        }}
-                    />
-                </div>
             </div> 
         )
     }
