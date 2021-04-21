@@ -21,6 +21,28 @@ import {Bar, defaults} from "react-chartjs-2";
 
 const useStyles = (theme) => ({
     
+    title:{
+        color: "grey",
+        fontSize: 45,
+        textAlign: "center",
+        marginTop: "30px",
+        marginBottom: "0px"
+    },
+
+    hr:{
+        width: '45%',
+        borderStyle: 'inset',
+        borderWidth: '2px',
+    },
+    
+    paper:{
+        margin: '30px 30px 30px 30px',
+        padding: '30px 30px 30px 30px'
+    },
+
+    chartContainer:{
+        marginTop: '30px'
+    }
 });
 
 class UserDashboard extends Component {
@@ -80,20 +102,21 @@ class UserDashboard extends Component {
             <div>
                 {redirectVar}
                 <UserNavbar/>
-                <div className="container">
-                    <h2>User Dashboard</h2>
+                <div>
+                    <Typography variant="h1" className={classes.title}>User Dashboard</Typography>
+                    <hr className={classes.hr}/>
                 </div>
                 <div>
-                    <Grid container spacing={3}>
+                    <Grid container spacing={0}>
                         <Grid item sm={12} md={6}>
-                            <Paper>
-                                <Typography variant="h4" className={classes.title}>
+                            <Paper className={classes.paper} elevation={3}>
+                                <Typography variant="h2">
                                         Simulation
                                 </Typography>
                             </Paper>
                         </Grid>
                         <Grid item sm={12} md={6}>
-                            <Paper>
+                            <Paper className={classes.paper} elevation={3}>
                                 <Typography variant="h2">
                                         Billing 
                                 </Typography>
@@ -113,7 +136,7 @@ class UserDashboard extends Component {
                                     <Typography variant="h3">${graphData[graphData.length-1]}</Typography>
                                 </div>
                                 
-                                <div>
+                                <div className={classes.chartContainer}>
                                     <Bar
                                         data = {{
                                             labels: graphLabel,
@@ -149,9 +172,7 @@ class UserDashboard extends Component {
                                                 ],
                                             },
                                             legend: {
-                                                labels: {
-                                                fontSize: 25,
-                                                },
+                                                display: false
                                             },
                                         }}
                                     />
