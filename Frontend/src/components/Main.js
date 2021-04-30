@@ -5,6 +5,9 @@ import UserDashboard from './Dashboard/UserDashboard';
 import AdminDashboard from './Dashboard/AdminDashboard';
 import Profile from './Profile/Profile';
 import Help from './Message/Help';
+import Simulations from './Simulation/simulations';
+import Logs from './Log/logs';
+import Navigation from './Movement/navigation'
 
 //Create a Main Component
 const Main = () => {
@@ -13,6 +16,15 @@ const Main = () => {
         <div>
             <Switch>
                 {/*Render Different Component based on Route*/}
+                <Route path="/simulations">
+                    <Simulations/>
+                </Route>
+                <Route path="/logs">
+                    <Logs/>
+                </Route>
+                <Route path="/navigation">
+                    <Navigation/>
+                </Route>
                 <Route path="/user-dashboard">
                     <UserDashboard/>
                 </Route>

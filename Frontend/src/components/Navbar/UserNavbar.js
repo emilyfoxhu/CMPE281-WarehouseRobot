@@ -49,22 +49,34 @@ class UserNavbar extends Component {
         const handleHomeButtonEvent = (event) => {
             event.preventDefault();//stop refresh
             window.location.href = "/user-dashboard"
-        }
+        };
         const handleHelp = (event) => {
             event.preventDefault();//stop refresh
             window.location.href = "/help"
-        }
+        };
         const handleProfile = (event) => {
             event.preventDefault();//stop refresh
             window.location.href = "/profile"
-        }
+        };
+        const handleSimulations = (event) => {
+            event.preventDefault();//stop refresh
+            window.location.href = "/simulations"
+        };
+        const handleLogs = (event) => {
+            event.preventDefault();//stop refresh
+            window.location.href = "/logs"
+        };
+        const handleNavigation = (event) => {
+            event.preventDefault();//stop refresh
+            window.location.href = "/navigation"
+        };
         //handle logout to destroy the cookie
         const handleLogOut = (event) => {
             event.preventDefault();//stop refresh
             window.localStorage.clear();
             this.props.userLogout();
             window.location.href = "/"
-        }
+        };
    
         return(
             <div>
@@ -82,8 +94,12 @@ class UserNavbar extends Component {
                             <Typography variant="h6" className={classes.title}>
                                 Warehouse Robot
                             </Typography>
-                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleHelp}>Help</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleHomeButtonEvent}>Home</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleSimulations}>Simulations</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleLogs}>Logs</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleNavigation}>Navigation</Button>
                             <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleProfile}>Profile</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleHelp}>Help</Button>
                             <Button variant="contained" size="large" color="primary" className={classes.button1} onClick={handleLogOut}>Log out</Button>
                         </Toolbar>
                     </AppBar>

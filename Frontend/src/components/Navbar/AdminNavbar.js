@@ -49,7 +49,7 @@ class AdminNavbar extends Component {
         const handleHomeButtonEvent = (event) => {
             event.preventDefault();//stop refresh
             window.location.href = "/admin-dashboard"
-        }
+        };
 
         //handle logout to destroy the cookie
         const handleLogOut = (event) => {
@@ -57,7 +57,7 @@ class AdminNavbar extends Component {
             window.localStorage.clear();
             this.props.userLogout();
             window.location.href = "/"
-        }
+        };
    
         return(
             <div>
@@ -66,7 +66,7 @@ class AdminNavbar extends Component {
                         <Toolbar>
                             <IconButton edge="start"
                                 className={classes.menuButton}
-                                color="inherit" 
+                                color="inherit"
                                 aria-label="menu"
                                 onClick={handleHomeButtonEvent}
                             >

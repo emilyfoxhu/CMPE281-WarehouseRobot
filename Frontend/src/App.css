@@ -48,3 +48,44 @@
 }
 .back { text-align: left; margin-top:10px;}
 .back a {color: #444444; font-size: 13px;text-decoration: none;}
+
+.MuiDataGrid-row.Mui-odd {
+  background-color: aliceblue;
+}
+
+.MuiDataGrid-root {
+  margin: 4%;
+  border: 1px solid #ccc;
+}
+
+.MuiDataGrid-columnsContainer {
+  background-color: slategray;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.MuiAvatar-root {
+  width: 80px!important;
+}
+
+.MuiButtonBase-root.Mui-disabled {
+  font-size: 14px!important;
+}
+
+.MuiTablePagination-root {
+  font-size: 14px!important;
+}
+
+.MuiToolbar-root {
+  font-size: 14px!important;
+}
+
+.MuiButton-label {
+  font-size: 10px!important;
+}
+
+html {
+  font-size: 14px;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
