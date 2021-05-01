@@ -58,11 +58,33 @@
   border: 1px solid #ccc;
 }
 
+.MuiTableCell-head {
+  font-weight: bold;
+  font-size: 14px;
+  background-color: slategray;
+  color: #fff!important;
+}
+
 .MuiDataGrid-columnsContainer {
   background-color: slategray;
   color: #fff;
   font-size: 14px;
   font-weight: bold;
+}
+
+.MuiPaper-elevation1 {
+  box-shadow: none!important;
+}
+
+.MuiDialog-paperWidthXs {
+  width: 80%!important;
+  max-width: none!important;
+}
+
+.MuiTable-root {
+  border: 1px solid #ccc;
+  width: 92%!important;
+  margin: 4%;
 }
 
 .MuiAvatar-root {
