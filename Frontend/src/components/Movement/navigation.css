@@ -1,5 +1,5 @@
 .background {
-    background-color: #242F3E;
+    /*background-color: #242F3E;*/
     
     width: 100vw;
     height: 95vh;
@@ -11,6 +11,7 @@
     height: 420px;
     background-color: #fff;
     margin: auto;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
   
   .background .whiteboard .top {
