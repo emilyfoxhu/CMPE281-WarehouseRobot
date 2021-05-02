@@ -2,17 +2,19 @@ const express = require("express");
 const app = express.Router();
 const db = require('../utils/MysqlConfig');
 
-app.get('/usage', (req, res) => {
+app.get('/usage/:email', (req, res) => {
     console.log("Inside get all users Request");
     console.log("Req Body : ", req.body);
+    const email = req.params.email;
     db.query(
         "SELECT month(endtime) as month, YEAR(endtime) as year,\
         SUM(TIMESTAMPDIFF(HOUR, starttime, endtime)) as duration_hours\
-        FROM robot\
-        WHERE useremail = 'user1@gmail.com'\
-        group by EXTRACT(YEAR_MONTH FROM endtime);",
+        FROM simulation\
+        WHERE user_email = ?\
+        group by EXTRACT(YEAR_MONTH FROM endtime);", email,
         (err, result) => {
             if (err) {
+                console.log(err);
                 res.status(500).end("Error");
             }
             if (result) {

@@ -87,7 +87,7 @@ class UserDashboard extends Component {
         
     }  
     componentDidMount(){ 
-        axios.get(`${backendConfig}/userdashboard/usage`)
+        axios.get(`${backendConfig}/userdashboard/usage/${localStorage.getItem("email")}`)
             .then((response) => {
                 this.setState({usageList : response.data})
             })
@@ -105,7 +105,7 @@ class UserDashboard extends Component {
         if(!localStorage.getItem('email')){
             redirectVar = <Redirect to= "/"/>
         }
-
+        console.log(this.state);
         let numMonths = 3;
         let feePerHour = 0.06;
         let graphLabel = [];
