@@ -70,6 +70,10 @@ class UserNavbar extends Component {
             event.preventDefault();//stop refresh
             window.location.href = "/navigation"
         };
+        const handleRobot = (event) => {
+            event.preventDefault();//stop refresh
+            window.location.href = "/robot"
+        };
         //handle logout to destroy the cookie
         const handleLogOut = (event) => {
             event.preventDefault();//stop refresh
@@ -95,8 +99,8 @@ class UserNavbar extends Component {
                                 Warehouse Robot
                             </Typography>
                             <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleHomeButtonEvent}>Home</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleRobot}>Robot</Button>
                             <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleSimulations}>Simulations</Button>
-                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleLogs}>Logs</Button>
                             <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleNavigation}>Navigation</Button>
                             <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleProfile}>Profile</Button>
                             <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleHelp}>Help</Button>

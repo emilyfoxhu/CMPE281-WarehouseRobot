@@ -89,9 +89,13 @@ router.get('/list_robots', function(req, res, next) {
                 }
             }
 
+            let filteredResult = result.filter(function (el) {
+                return el != null;
+            });
+
             res.send({
                 message: {
-                    simulations: result,
+                    simulations: filteredResult,
                     account_id: 257034989243,
                     error: null
                 }

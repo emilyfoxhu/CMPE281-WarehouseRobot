@@ -76,6 +76,10 @@
   box-shadow: none!important;
 }
 
+.MuiSelect-root {
+  width: 150px!important;
+}
+
 .MuiDialog-paperWidthXs {
   width: 80%!important;
   max-width: none!important;

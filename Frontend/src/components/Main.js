@@ -8,6 +8,7 @@ import Help from './Message/Help';
 import Simulations from './Simulation/simulations';
 import Logs from './Log/logs';
 import Navigation from './Movement/navigation'
+import Robot from './Robot/robot'
 
 //Create a Main Component
 const Main = () => {
@@ -18,6 +19,9 @@ const Main = () => {
                 {/*Render Different Component based on Route*/}
                 <Route path="/simulations">
                     <Simulations/>
+                </Route>
+                <Route path="/robot">
+                    <Robot/>
                 </Route>
                 <Route path="/logs">
                     <Logs/>
