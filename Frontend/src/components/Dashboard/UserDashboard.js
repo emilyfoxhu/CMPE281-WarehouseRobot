@@ -82,7 +82,8 @@ class UserDashboard extends Component {
     constructor(props){
         super(props);
         this.state = {  
-            usageList : []
+            usageList : [],
+            totalBilling : ""
         }
         
     }  
@@ -90,14 +91,18 @@ class UserDashboard extends Component {
         axios.get(`${backendConfig}/userdashboard/usage/${localStorage.getItem("email")}`)
             .then((response) => {
                 this.setState({usageList : response.data})
+                let usageList = response.data;
+                let sum = 0;
+                usageList.map((listing) => {
+                    sum += listing.duration_hours;
+                })
+                this.setState({totalBilling : sum*0.06})
             })
             .catch(err => {
                 console.log(err.response);
             });
     }
 
-    
-    
     render(){
         const { classes } = this.props;
         //if not logged in go to login page
@@ -130,7 +135,6 @@ class UserDashboard extends Component {
 
         }
 
-    
         return(
             <div>
                 {redirectVar}
