@@ -42,25 +42,4 @@ app.get('/usage/:email', (req, res) => {
     );
 });
 
-// app.post('/billing', (req, res) => {
-//     console.log("Inside get all users Request");
-//     console.log("Req Body : ", req.body);
-//     const email = req.body.email;
-//     const billing = req.body.billing;
-//     db.query(
-//         "UPDATE user SET billing=? WHERE email=?;",
-//         [billing, email],
-//         (err, result) => {
-//             if (err) {
-//                 console.log(err);
-//                 res.status(500).end("Error");
-//             }
-//             if (result) {
-//                 console.log("success update billing");
-//                 res.status(200).end("Success_Update_Billing");
-//             }
-//         }
-//     )
-// });
-
 module.exports = app;

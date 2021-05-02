@@ -19,6 +19,7 @@ import AdminNavbar from '../Navbar/AdminNavbar';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { userSignup } from '../../redux/actions/signupAction';
+import {Pie} from "react-chartjs-2";
 import backendConfig from "../../backendConfig";
 
 const useStyles = (theme) => ({
@@ -64,6 +65,8 @@ class AdminDashboard extends Component {
             open_billing : false,
             open_delete : false,
             userlist: [],
+            simulationlist: [],
+            numOfRunningSim: "",
             messagelist: [],
             email : "",
             username : "",
@@ -88,6 +91,21 @@ class AdminDashboard extends Component {
         axios.get(`${backendConfig}/admindashboard/users`)
             .then((response) => {
                 this.setState({userlist : response.data})
+            })
+            .catch(err => {
+                console.log(err.response);
+            });
+        axios.get(`${backendConfig}/admindashboard/simulations`)
+            .then((response) => {
+                let sum = 0;
+                let simulationlist = response.data;
+                simulationlist.map((listing) => {
+                    if (!listing.endtime) sum += 1;
+                })
+                this.setState({
+                    simulationlist : response.data,
+                    numOfRunningSim : sum
+                })
             })
             .catch(err => {
                 console.log(err.response);
@@ -166,7 +184,20 @@ class AdminDashboard extends Component {
     }
     handleBilling = (event) => {
         event.preventDefault();//stop refresh
-        
+        const data = {
+            email : localStorage.getItem("UserEmail"),
+            billing : localStorage.getItem("UserBilling")
+        }
+        axios.post(`${backendConfig}/admindashboard/sendbilling`, data)
+            .then((response) => {
+                if (response.status === 200){
+                    alert("Successfully send billing to the user");
+                    window.location.href = "/admin-dashboard";
+                }
+            })
+            .catch(err => {
+                console.log(err.response);
+            });
     }
     handleMessage= (event) => {
         event.preventDefault();//stop refresh
@@ -213,9 +244,36 @@ class AdminDashboard extends Component {
                                     <Typography variant="h6" className={classes.title}>
                                         Robot Tracking
                                     </Typography>
-                                    <Typography className={classes.message}>There are 0 registered robots</Typography><br/><br/>
-                                    <Typography className={classes.message}>There are 0 running robots</Typography><br/><br/>
-
+                                    <Typography className={classes.message}>There are {this.state.simulationlist.length} registered robots</Typography><br/>
+                                    <Typography className={classes.message}>There are {this.state.numOfRunningSim} running robots</Typography><br/>
+                                    <Typography className={classes.message}>There are {this.state.simulationlist.length} simulations</Typography><br/>
+                                    <Typography className={classes.message}>There are {this.state.numOfRunningSim} running simulations</Typography>
+                                    <Pie
+                                        data = {{
+                                            labels: ["Running simulations", "Stopped simulations"],
+                                            datasets: [
+                                                {
+                                                label: "Tracking simulations",
+                                                data: [this.state.numOfRunningSim, this.state.simulationlist.length - this.state.numOfRunningSim],
+                                                backgroundColor: [
+                                                    'rgba(255, 99, 132, 0.2)',
+                                                    'rgba(54, 162, 235, 0.2)',
+                                                ],
+                                                borderColor: [
+                                                    'rgba(255, 99, 132, 1)',
+                                                    'rgba(54, 162, 235, 1)',
+                                                ],
+                                                borderWidth: 1,
+                                                },
+                                            ],
+                                            }}
+                                            options={{
+                                                maintainAspectRatio: false,
+                                                legend: {
+                                                    display: false
+                                                },
+                                            }}
+                                    />
                                 </Grid>
                                 <Grid item xs={7}>
                                     <Toolbar>
@@ -246,6 +304,7 @@ class AdminDashboard extends Component {
                                                         <Grid item xs={2}> 
                                                             <Button variant="contained" size="large" color="primary" onClick={(event)=>{
                                                                     localStorage.setItem("UserBilling", listing.billing);
+                                                                    localStorage.setItem("UserEmail", listing.email);
                                                                     this.handleClickOpenBilling(event);
                                                                 }}>Billing</Button>
                                                         </Grid>
