@@ -105,17 +105,6 @@ class Robot extends Component {
                 .then((response) => {
                     alert("Simulation stopped successfully.");
                     this.setState( { disableStartButton: false });
-                    axios.post(`${backendConfig}/users/addPricingDetails`, {
-                            email: localStorage.getItem('email'),
-                            robotName: this.state.selectedRobot,
-                            simulationName: sim
-                        })
-                        .then((response) => {
-                            alert("Price added successfully.");
-                        })
-                        .catch(err => {
-                            console.log(err.response);
-                        });
                 })
                 .catch(err => {
                     console.log(err.response);

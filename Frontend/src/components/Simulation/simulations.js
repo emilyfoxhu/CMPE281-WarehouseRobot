@@ -79,7 +79,7 @@ class Simulations extends Component {
                                 {this.state.simulationList.map((row) => (
                                     <TableRow key={row.name}>
                                         <TableCell component="th" scope="row">
-                                            {row.robotApplicationNames}
+                                            {row.robotApplicationNames.toString().replace("deliverychallenge_robot", "cmpe281_robot")}
                                         </TableCell>
                                         <TableCell align="left">{row.arn.split('/')[1]}</TableCell>
                                         <TableCell align="left">{row.arn}</TableCell>

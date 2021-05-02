@@ -83,7 +83,8 @@ class UserDashboard extends Component {
         super(props);
         this.state = {  
             usageList : [],
-            totalBilling : ""
+            totalBilling : "",
+            simulationList: []
         }
         
     }  
@@ -97,6 +98,14 @@ class UserDashboard extends Component {
                     sum += listing.duration_hours;
                 })
                 this.setState({totalBilling : sum*0.06})
+            })
+            .catch(err => {
+                console.log(err.response);
+            });
+
+        axios.get(`${backendConfig}/users/getSimulations/${localStorage.getItem("email")}`)
+            .then((response) => {
+                this.setState({ simulationList : response.data });
             })
             .catch(err => {
                 console.log(err.response);
@@ -145,43 +154,9 @@ class UserDashboard extends Component {
                 </div>
                 <div>
                     <Grid container spacing={0}>
-                        <Grid item sm={12} md={6}>
+                        <Grid item sm={12} md={12}>
                             <Paper className={classes.paper} elevation={3}>
-                                <Typography variant="h2" className={classes.panelTitle}>
-                                        Simulation
-                                </Typography>
-                                <div>
-                                    <Button variant="contained" size="large" color="primary" className={classes.button}>Start a warehouse robot</Button>
-                                </div>
-                                <div className={classes.instancesContainer}>
-                                    <Typography variant="h4">Running Instances:</Typography>
-                                    <br />
-                                    <TableContainer component={Paper}>
-                                        <Table className={classes.table} aria-label="simple table">
-                                            <TableHead>
-                                            <TableRow>
-                                                <TableCell className={classes.tablecell}>Robot ID</TableCell>
-                                                <TableCell align="right" className={classes.tablecell}>Runtime(hours)</TableCell>
-                                            </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                            {rows.map((row) => (
-                                                <TableRow key={row.name}>
-                                                <TableCell component="th" scope="row" className={classes.tablecell}>
-                                                    {row.id}
-                                                </TableCell>
-                                                <TableCell align="right" className={classes.tablecell}>{row.runtime}</TableCell >
-                                                </TableRow>
-                                            ))}
-                                            </TableBody>
-                                        </Table>
-                                    </TableContainer>
-                                </div>
-                            </Paper>
-                        </Grid>
-                        <Grid item sm={12} md={6}>
-                            <Paper className={classes.paper} elevation={3}>
-                                <Typography variant="h2" className={classes.panelTitle}>
+                                <Typography variant="h3" className={classes.panelTitle}>
                                         Billing 
                                 </Typography>
                                 {/* {this.state.usageList.map((listing, index) => {
@@ -195,8 +170,8 @@ class UserDashboard extends Component {
                                 )} */}
 
                                 <div>
-                                    <Typography variant="h4">Current month-to-date balance for {graphLabel[graphLabel.length-1]}</Typography>
-                                    <Typography variant="h3">${graphData[graphData.length-1]}</Typography>
+                                    <Typography variant="h5">Current month-to-date balance for {graphLabel[graphLabel.length-1]}</Typography>
+                                    <Typography variant="h5">${graphData[graphData.length-1]}</Typography>
                                 </div>
                                 
                                 <div className={classes.chartContainer}>
@@ -241,6 +216,34 @@ class UserDashboard extends Component {
                                     />
                                 </div>
                             </Paper>
+                        </Grid>
+                        <Grid item sm={12} md={12}>
+                            <TableContainer component={Paper}>
+                                <Table className={classes.table} aria-label="simple table">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Simulation Name</TableCell>
+                                            <TableCell align="left">Start Time</TableCell>
+                                            <TableCell align="left">End Time</TableCell>
+                                            <TableCell align="left">Robot Name</TableCell>
+                                            <TableCell align="left">Email</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {this.state.simulationList.map((row) => (
+                                            <TableRow key={row.name}>
+                                                <TableCell component="th" scope="row">
+                                                    {row.simulationName}
+                                                </TableCell>
+                                                <TableCell align="left">{row.starttime}</TableCell>
+                                                <TableCell align="left">{row.endtime}</TableCell>
+                                                <TableCell align="left">{row.robotName}</TableCell>
+                                                <TableCell align="left">{row.user_email}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
                         </Grid>
                     </Grid>
                 </div>
