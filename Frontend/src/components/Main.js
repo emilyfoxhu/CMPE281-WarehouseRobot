@@ -7,7 +7,7 @@ import Profile from './Profile/Profile';
 import Help from './Message/Help';
 import Simulations from './Simulation/simulations';
 import Logs from './Log/logs';
-import Navigation from './Movement/navigation'
+import Gameboard from './Movement/navigation'
 import Robot from './Robot/robot'
 
 //Create a Main Component
@@ -27,7 +27,7 @@ const Main = () => {
                     <Logs/>
                 </Route>
                 <Route path="/navigation">
-                    <Navigation/>
+                    <Gameboard/>
                 </Route>
                 <Route path="/user-dashboard">
                     <UserDashboard/>

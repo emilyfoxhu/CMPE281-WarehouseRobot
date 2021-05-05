@@ -87,12 +87,14 @@ async function main() {
 
             let odom = json["odom"];
             if (odom) {
-                OdometryControlInstance.setState({
-                    x:odom["x"].toFixed(4),
-                    y:odom["y"].toFixed(4),
-                    z:odom["z"].toFixed(4),
-                    h:(odom["yaw"] * ( 180 / Math.PI )).toFixed(4)
-                })
+                if (OdometryControlInstance) {
+                    OdometryControlInstance.setState({
+                        x:odom["x"].toFixed(4),
+                        y:odom["y"].toFixed(4),
+                        z:odom["z"].toFixed(4),
+                        h:(odom["yaw"] * ( 180 / Math.PI )).toFixed(4)
+                    });
+                }
             }
         }
         else if (command === "result") {
@@ -100,7 +102,10 @@ async function main() {
         }
     });
 
-    SyncJobFunction = function() {
+    SyncJobFunction = function(action) {
+        if (action) {
+            MoveAction = action;
+        }
         let payload = {};
         let shouldPublish = false;
         if (MoveAction !== "") {
@@ -155,21 +160,154 @@ async function main() {
 
 main();
 
-class Navigation extends Component {
+class Controller extends Component {
 
     constructor(props) {
         super(props);
+        MoveAction = "";
+        MoveActionPrev = "";
+    }
+
+    //control
+    move_forward_down = () => {
+        this.setState({MoveAction : "forward"}); console.log("move_forward pressed"); SyncJobFunction("forward");
+    }
+    move_forward_up = () => {
+        this.setState({MoveAction : ""}); console.log("move_forward released");
+    }
+    move_left_down = () => {
+        this.setState({MoveAction : "left"}); console.log("move_left pressed"); SyncJobFunction("left");
+    }
+    move_left_up = () => {
+        this.setState({MoveAction : ""}); console.log("move_left released");
+    }
+    move_right_down = () => {
+        this.setState({MoveAction : "right"}); console.log("move_right pressed"); SyncJobFunction("right");
+    }
+    move_right_up = () => {
+        this.setState({MoveAction : ""}); console.log("move_right released");
+    }
+    move_backward_down = () => {
+        this.setState({MoveAction : "backward"}); console.log("move_backward pressed"); SyncJobFunction("backward");
+    }
+    move_backward_up = () => {
+        this.setState({MoveAction : ""}); console.log("move_backward released");
+    }
+    move_stop_down = () => {
+        this.setState({MoveAction : "stop"}); console.log("move_stop pressed"); SyncJobFunction("stop");
+    }
+    move_stop_up = () => {
+        this.setState({MoveAction : ""}); console.log("move_stop released");
+    }
+
+    render() {
+        return (
+            <div className="controller">
+                <div className="forward">
+                    <button className="button move_button" onMouseDown={this.move_forward_down} onMouseUp={this.move_forward_up} >↑</button>
+                </div>
+                <div className="left">
+                    <button className="button move_button"  onMouseDown={this.move_left_down} onMouseUp={this.move_left_up}>←</button>
+                </div>
+                <div className="stop">
+                    <button className="button move_button"  onMouseDown={this.move_stop_down} onMouseUp={this.move_stop_up}>・</button>
+                </div>
+                <div className="right">
+                    <button className="button move_button"  onMouseDown={this.move_right_down} onMouseUp={this.move_right_up}>→</button>
+                </div>
+                <div className="backward">
+                    <button className="button move_button"  onMouseDown={this.move_backward_down} onMouseUp={this.move_backward_up}>↓</button>
+                </div>
+            </div>
+        );
+    }
+}
+
+class Odometry extends Component {
+    constructor(props) {
+        super(props);
+        OdometryControlInstance = this;
+        this.state = { x: 0, y:0, z:0, h:0 };
+    }
+    render() {
+        return (
+            <div className="location">
+                <div className="title">Location</div>
+                <div className="name">Odometry</div>
+                <div className="odom_x">x</div>
+                <div className="odom_y">y</div>
+                <div className="odom_z">z</div>
+                <div className="odom_heading">heading</div>
+                <div className="odom_value_x">{this.state.x}</div>
+                <div className="odom_value_y">{this.state.y}</div>
+                <div className="odom_value_z">{this.state.z}</div>
+                <div className="odom_value_heading">{this.state.h}</div>
+            </div>
+        );
+    }
+}
+
+class Navigation extends Component {
+    constructor(props) {
+        super(props);
         NavigationControlInstance = this;
-        this.state = {
-            MoveAction: "",
-            //Odometry
-            x: 0, y:0, z:0, h:0,
-            //navigation
-            x1: 0, y1:0, heading:0
-        }
+        this.state = { x: 0, y:0, heading:0 };
+    }
+    render() {
+        return (
+            <div className="goal">
+                <div className="title_goal">Goal</div>
+                <div className="goal_x">x</div>
+                <div className="goal_y">y</div>
+                <div className="goal_heading">heading</div>
+                <div className="goal_value_x"><input className="input_field" type="text" onChange={this.onChangeGoalX} value={this.state.x} /></div>
+                <div className="goal_value_y"><input className="input_field" type="text" onChange={this.onChangeGoalY} value={this.state.y} /></div>
+                <div className="goal_value_heading"><input className="input_field" type="text" onChange={this.onChangeGoalHeading} value={this.state.heading} /></div>
+                <div className="goal_button"><button className="button action_button" onClick={this.go_to_target}>[G]o To</button></div>
+            </div>
+        );
+    }
+
+    go_to_target() {
+        GoToTargetFunction(NavigationControlInstance.state.x, NavigationControlInstance.state.y, NavigationControlInstance.state.heading)
+    }
+
+    onChangeGoalX(e) {
+        NavigationControlInstance.setState({x: e.target.value});
+    }
+    onChangeGoalY(e) {
+        NavigationControlInstance.setState({y: e.target.value});
+    }
+    onChangeGoalHeading(e) {
+        NavigationControlInstance.setState({heading: e.target.value});
+    }
+}
+
+class SaveMap extends Component {
+
+    render() {
+        return (
+            <div className="save">
+                <div className="save_button">
+                    <button className="button action_button" onClick={this.map_save}>Save Map</button>
+                </div>
+            </div>
+        );
+    }
+
+    map_save() {
+        SaveMapFunction();
+    }
+}
+
+
+class GameBoard extends Component {
+    constructor(props) {
+        super(props);
         document.onkeydown = this.checkKeyDown;
         document.onkeyup = this.checkKeyUp;
     }
+
     //key down
     checkKeyDown = (e) => {
         e = e || window.event;
@@ -205,63 +343,15 @@ class Navigation extends Component {
             this.move_stop_down();
         }
     }
-    //control
-    move_forward_down = () => {
-        this.setState({MoveAction : "forward"}); console.log("move_forward pressed"); SyncJobFunction();
-    }
-    move_forward_up = () => {
-        this.setState({MoveAction : ""}); console.log("move_forward released"); 
-    }
-    move_left_down = () => {
-        this.setState({MoveAction : "left"}); console.log("move_left pressed"); SyncJobFunction();
-    }
-    move_left_up = () => {
-        this.setState({MoveAction : ""}); console.log("move_left released"); 
-    }
-    move_right_down = () => {
-        this.setState({MoveAction : "right"}); console.log("move_right pressed"); SyncJobFunction();
-    }
-    move_right_up = () => {
-        this.setState({MoveAction : ""}); console.log("move_right released");
-    }
-    move_backward_down = () => {
-        this.setState({MoveAction : "backward"}); console.log("move_backward pressed"); SyncJobFunction();
-    }
-    move_backward_up = () => {
-        this.setState({MoveAction : ""}); console.log("move_backward released");
-    }
-    move_stop_down = () => {
-        this.setState({MoveAction : "stop"}); console.log("move_stop pressed"); SyncJobFunction();
-    }
-    move_stop_up = () => {
-        this.setState({MoveAction : ""}); console.log("move_stop released");
-    }
-    //goal change handlers
-    onChangeGoalX = (e) => {
-        NavigationControlInstance.setState({x1: e.target.value});
-    }
-    onChangeGoalY = (e) => {
-        NavigationControlInstance.setState({y1: e.target.value});
-    }
-    onChangeGoalHeading = (e) => {
-        NavigationControlInstance.setState({heading: e.target.value});
-    }
-    go_to_target = (e) => {
-        GoToTargetFunction(NavigationControlInstance.state.x1, NavigationControlInstance.state.y1, NavigationControlInstance.state.heading);
-    }
-    //save map
-    map_save = () => {
-        SaveMapFunction();
-    }
 
     render() {
         const { classes } = this.props;
         let redirectVar = null;
-        console.log(this.state);
         if(!localStorage.getItem('email')){
             redirectVar = <Redirect to= "/"/>
         }
-        return(
+
+        return (
             <div>
                 {redirectVar}
                 <UserNavbar/>
@@ -272,64 +362,12 @@ class Navigation extends Component {
                 <div className="background">
                     <div className="whiteboard">
                         <div className="top">
-                            {/* Controller */}
-                            <div className="controller">
-                                <div className="forward">
-                                    <button className="button move_button" onMouseDown={this.move_forward_down} onMouseUp={this.move_forward_up} >↑</button>
-                                </div>
-                                <div className="left">
-                                    <button className="button move_button"  onMouseDown={this.move_left_down} onMouseUp={this.move_left_up}>←</button>
-                                </div>
-                                <div className="stop">
-                                    <button className="button move_button"  onMouseDown={this.move_stop_down} onMouseUp={this.move_stop_up}>・</button>
-                                </div>
-                                <div className="right">
-                                    <button className="button move_button"  onMouseDown={this.move_right_down} onMouseUp={this.move_right_up}>→</button>
-                                </div>
-                                <div className="backward">
-                                    <button className="button move_button"  onMouseDown={this.move_backward_down} onMouseUp={this.move_backward_up}>↓</button>
-                                </div>
-                            </div>
-                            {/* Odometry */}
-                            <div className="location">
-                                <div className="title">Location</div>
-                                <div className="name">Odometry</div>
-                                <div className="odom_x">x</div>
-                                <div className="odom_y">y</div>
-                                <div className="odom_z">z</div>
-                                <div className="odom_heading">heading</div>
-                                <div className="odom_value_x">{this.state.x}</div>
-                                <div className="odom_value_y">{this.state.y}</div>
-                                <div className="odom_value_z">{this.state.z}</div>
-                                <div className="odom_value_heading">{this.state.h}</div>
-                            </div>
+                            <Controller/>
+                            <Odometry/>
                         </div>
                         <div className="bottom">
-                            {/* Navigation */}
-                            <div className="goal">
-                                <div className="title_goal">Goal</div>
-                                <div className="goal_x">x</div>
-                                <div className="goal_y">y</div>
-                                <div className="goal_heading">heading</div>
-                                <div className="goal_value_x">
-                                    <input className="input_field" type="text" onChange={this.onChangeGoalX} value={this.state.x1} />
-                                </div>
-                                <div className="goal_value_y">
-                                    <input className="input_field" type="text" onChange={this.onChangeGoalY} value={this.state.y1} />
-                                </div>
-                                <div className="goal_value_heading">
-                                    <input className="input_field" type="text" onChange={this.onChangeGoalHeading} value={this.state.heading} />
-                                </div>
-                                <div className="goal_button">
-                                    <button className="button action_button" onClick={this.go_to_target}>[G]o To</button>
-                                </div>
-                            </div>
-                            {/* SaveMap */}
-                            <div className="save">
-                                <div className="save_button">
-                                    <button className="button action_button" onClick={this.map_save}>Save Map</button>
-                                </div>
-                            </div>
+                            <Navigation/>
+                            <SaveMap/>
                         </div>
                     </div>
                 </div>
@@ -338,4 +376,4 @@ class Navigation extends Component {
     }
 }
 
-export default withStyles(useStyles)(Navigation);
+export default withStyles(useStyles)(GameBoard);

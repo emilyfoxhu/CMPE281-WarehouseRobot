@@ -31,7 +31,7 @@ class Simulations extends Component {
     }
 
     componentDidMount() {
-        axios.get(`${backendConfig}/aws_robomaker/get_simulation`)
+        axios.get(`${backendConfig}/aws_robomaker/get_simulation/${localStorage.getItem("email")}`)
             .then((response) => {
                 this.setState({simulationList : response.data.message.simulations});
                 this.setState({ accountId: response.data.message.account_id });

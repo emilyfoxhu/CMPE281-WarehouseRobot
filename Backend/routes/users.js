@@ -4,11 +4,19 @@ const db = require('../utils/MysqlConfig');
 
 /* GET users listing. */
 router.post('/startSimulation', function(req, res, next) {
+  const simulationName = req.body.simulationName;
+  const type = req.body.simulationType;
   const email = req.body.email;
   const robotName = req.body.robotName;
-  const simulationName = req.body.simulationName;
+  let simulation = "";
+  if (type === "1" || type === 1){
+      simulation = "Navigation Simulation";
+  } else {
+      simulation = "Movement Simulation";
+  }
+
   db.query(
-      "INSERT into simulation (simulationName, starttime, endtime, user_email, robotName) VALUES (?,?,?,?,?);", [simulationName, new Date(), null, email, robotName], (err, result) => {
+      "INSERT into simulation (simulationName, starttime, endtime, user_email, robotName, simulationType) VALUES (?,?,?,?,?,?);", [simulationName, new Date(), null, email, robotName, simulation], (err, result) => {
         if (err) {
           res.status(500).end("Error");
           console.log(err);

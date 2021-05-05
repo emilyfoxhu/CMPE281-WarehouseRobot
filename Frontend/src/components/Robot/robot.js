@@ -17,6 +17,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import LandingPage from "../LandingPage/LandingPage";
 
 const useStyles = makeStyles({
     table: {
@@ -48,9 +49,11 @@ class Robot extends Component {
             robotList: [],
             accountId: 0,
             disableStartButton: false,
-            disableStopButton: true,
+            disableStopButton: false,
             selectedRobot: '',
-            currentSimulation: ''
+            currentSimulation: '',
+            currentSimulationARN: '',
+            simulationList: []
         }
 
     }
@@ -64,28 +67,75 @@ class Robot extends Component {
             .catch(err => {
                 console.log(err.response);
             });
+
+
+
+        axios.get(`${backendConfig}/users/getSimulations/${localStorage.getItem("email")}`)
+            .then((response) => {
+                this.setState({ simulationList : response.data });
+            })
+            .catch(err => {
+                console.log(err.response);
+            });
     }
 
     render() {
-        const handleStartSimulation = (event) => {
+
+        const handleStartSimulation1 = (event) => {
             event.preventDefault();//stop refresh
-            let sim = "sim-" + makeid(11);
-            simulationName = sim;
-            this.setState({ currentSimulation: sim });
-            this.setState( { disableStartButton: true });
-            axios.post(`${backendConfig}/users/startSimulation`, {
-                email: localStorage.getItem('email'),
-                robotName: this.state.selectedRobot,
-                simulationName: sim
-            })
+            axios.post(`${backendConfig}/aws_robomaker/start_simulation/type/1`)
                 .then((response) => {
-                    alert("Simulation started successfully.");
-                    this.setState( { disableStopButton: false });
+                    let simulation_Id = response.data.message.arn;
+                    let splitId = simulation_Id.split('/')[1];
+                    this.setState({ currentSimulation : splitId });
+                    this.setState({ currentSimulationARN : simulation_Id });
+
+                    axios.post(`${backendConfig}/users/startSimulation`, {
+                        simulationName: splitId,
+                        simulationType: 1,
+                        email: localStorage.getItem("email"),
+                        robotName: this.state.selectedRobot
+                    })
+                        .then((response) => {
+                            alert("Simulation started successfully.");
+                            window.location.href = "/robot";
+                        })
+                        .catch(err => {
+                            console.log(err.response);
+                        });
                 })
                 .catch(err => {
                     console.log(err.response);
                 });
-        };
+        }
+
+        const handleStartSimulation2 = (event) => {
+            event.preventDefault();//stop refresh
+            axios.post(`${backendConfig}/aws_robomaker/start_simulation/type/2`)
+                .then((response) => {
+                    let simulation_Id = response.data.message.arn;
+                    let splitId = simulation_Id.split('/')[1];
+                    this.setState({ currentSimulation : splitId });
+                    this.setState({ currentSimulationARN : simulation_Id });
+
+                    axios.post(`${backendConfig}/users/startSimulation`, {
+                        simulationName: splitId,
+                        simulationType: 2,
+                        email: localStorage.getItem("email"),
+                        robotName: this.state.selectedRobot
+                    })
+                        .then((response) => {
+                            alert("Simulation started successfully.");
+                            window.location.href = "/robot";
+                        })
+                        .catch(err => {
+                            console.log(err.response);
+                        });
+                })
+                .catch(err => {
+                    console.log(err.response);
+                });
+        }
 
         const handleChange = (event) => {
             this.setState({ selectedRobot: event.target.value });
@@ -93,18 +143,21 @@ class Robot extends Component {
 
         const handleStopSimulation = (event) => {
             event.preventDefault();//stop refresh
-            this.setState( { disableStopButton: true });
-            let sim = this.state.currentSimulation;
-            if (sim === "") {
-                sim = simulationName;
-            }
+            let sim = event.target.parentNode.parentNode.parentNode.childNodes[0].innerHTML;
 
-            axios.post(`${backendConfig}/users/stopSimulation`, {
-                simulationName: sim,
-            })
+            axios.post(`${backendConfig}/aws_robomaker/stop_simulation/${sim}`)
                 .then((response) => {
-                    alert("Simulation stopped successfully.");
-                    this.setState( { disableStartButton: false });
+
+                    axios.post(`${backendConfig}/users/stopSimulation`, {
+                        simulationName: sim,
+                    })
+                        .then((response) => {
+                            alert("Simulation stopped successfully.");
+                            window.location.href = "/robot";
+                        })
+                        .catch(err => {
+                            console.log(err.response);
+                        });
                 })
                 .catch(err => {
                     console.log(err.response);
@@ -161,14 +214,14 @@ class Robot extends Component {
                 </div>
                 <div>
                     <fieldset>
-                        <legend>Simulation</legend>
+                        <legend>Start Simulations</legend>
                         <TableContainer component={Paper}>
                             <Table className={classes.table} aria-label="simple table">
                                 <TableHead>
                                     <TableRow>
                                         <TableCell align="left">Robots</TableCell>
-                                        <TableCell align="left">Start</TableCell>
-                                        <TableCell align="left">Stop</TableCell>
+                                        <TableCell align="left">Movement Simulation</TableCell>
+                                        <TableCell align="left">Navigation Simulation</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -189,12 +242,59 @@ class Robot extends Component {
                                             </FormControl>
                                         </TableCell>
                                         <TableCell>
-                                            <Button disabled={this.state.disableStartButton} variant="contained" size="large" color="primary" className={classes.button} onClick={handleStartSimulation}>Start Simulation</Button>
+                                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleStartSimulation2}>Start Movement Simulation</Button>
                                         </TableCell>
                                         <TableCell>
-                                            <Button disabled={this.state.disableStopButton} variant="contained" size="large" color="primary" className={classes.button} onClick={handleStopSimulation}>Stop Simulation</Button>
+                                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleStartSimulation1}>Start Navigation Simulation</Button>
                                         </TableCell>
                                     </TableRow>
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </fieldset>
+                </div>
+                <div>
+                    <fieldset>
+                        <legend>Simulation List</legend>
+                        <TableContainer component={Paper}>
+                            <Table className={classes.table} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Simulation Name</TableCell>
+                                        <TableCell align="left">Start Time</TableCell>
+                                        <TableCell align="left">End Time</TableCell>
+                                        <TableCell align="left">Robot Name</TableCell>
+                                        <TableCell align="left">Type</TableCell>
+                                        <TableCell align="left">Email</TableCell>
+                                        <TableCell align="left">Stop</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {this.state.simulationList.map((row) => (
+                                        <TableRow key={row.name}>
+                                            <TableCell component="th" scope="row">
+                                                {row.simulationName}
+                                            </TableCell>
+                                            <TableCell align="left">{row.starttime}</TableCell>
+                                            <TableCell align="left">{row.endtime}</TableCell>
+                                            <TableCell align="left">{row.robotName}</TableCell>
+                                            <TableCell align="left">{row.simulationType}</TableCell>
+                                            <TableCell align="left">{row.user_email}</TableCell>
+                                            <TableCell>
+                                                {(() => {
+                                                    if (row.endtime !== null) {
+                                                        return (
+                                                            <Button disabled={true} variant="contained" size="large" color="primary" className={classes.button} onClick={handleStopSimulation}>Stop Simulation</Button>
+                                                        )
+                                                    } else {
+                                                        return (
+                                                            <Button disabled={false} variant="contained" size="large" color="primary" className={classes.button} onClick={handleStopSimulation}>Stop Simulation</Button>
+                                                        )
+                                                    }
+                                                })()}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                             </Table>
                         </TableContainer>
