@@ -11,7 +11,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import UserNavbar from '../Navbar/UserNavbar';
-import backendConfig from "../../backendConfig";
+import simulationCloudConfig from "../../simulationCloudConfig";
 import {Button} from "@material-ui/core";
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -59,7 +59,7 @@ class Robot extends Component {
     }
 
     componentDidMount() {
-        axios.get(`${backendConfig}/aws_robomaker/list_robots`)
+        axios.get(`${simulationCloudConfig}/aws_robomaker/list_robots`)
             .then((response) => {
                 this.setState({robotList : response.data.message.simulations});
                 this.setState({ accountId: response.data.message.account_id });
@@ -70,7 +70,7 @@ class Robot extends Component {
 
 
 
-        axios.get(`${backendConfig}/users/getSimulations/${localStorage.getItem("email")}`)
+        axios.get(`${simulationCloudConfig}/users/getSimulations/${localStorage.getItem("email")}`)
             .then((response) => {
                 this.setState({ simulationList : response.data });
             })
@@ -83,14 +83,14 @@ class Robot extends Component {
 
         const handleStartSimulation1 = (event) => {
             event.preventDefault();//stop refresh
-            axios.post(`${backendConfig}/aws_robomaker/start_simulation/type/1`)
+            axios.post(`${simulationCloudConfig}/aws_robomaker/start_simulation/type/1`)
                 .then((response) => {
                     let simulation_Id = response.data.message.arn;
                     let splitId = simulation_Id.split('/')[1];
                     this.setState({ currentSimulation : splitId });
                     this.setState({ currentSimulationARN : simulation_Id });
 
-                    axios.post(`${backendConfig}/users/startSimulation`, {
+                    axios.post(`${simulationCloudConfig}/users/startSimulation`, {
                         simulationName: splitId,
                         simulationType: 1,
                         email: localStorage.getItem("email"),
@@ -111,14 +111,14 @@ class Robot extends Component {
 
         const handleStartSimulation2 = (event) => {
             event.preventDefault();//stop refresh
-            axios.post(`${backendConfig}/aws_robomaker/start_simulation/type/2`)
+            axios.post(`${simulationCloudConfig}/aws_robomaker/start_simulation/type/2`)
                 .then((response) => {
                     let simulation_Id = response.data.message.arn;
                     let splitId = simulation_Id.split('/')[1];
                     this.setState({ currentSimulation : splitId });
                     this.setState({ currentSimulationARN : simulation_Id });
 
-                    axios.post(`${backendConfig}/users/startSimulation`, {
+                    axios.post(`${simulationCloudConfig}/users/startSimulation`, {
                         simulationName: splitId,
                         simulationType: 2,
                         email: localStorage.getItem("email"),
@@ -145,10 +145,10 @@ class Robot extends Component {
             event.preventDefault();//stop refresh
             let sim = event.target.parentNode.parentNode.parentNode.childNodes[0].innerHTML;
 
-            axios.post(`${backendConfig}/aws_robomaker/stop_simulation/${sim}`)
+            axios.post(`${simulationCloudConfig}/aws_robomaker/stop_simulation/${sim}`)
                 .then((response) => {
 
-                    axios.post(`${backendConfig}/users/stopSimulation`, {
+                    axios.post(`${simulationCloudConfig}/users/stopSimulation`, {
                         simulationName: sim,
                     })
                         .then((response) => {

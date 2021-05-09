@@ -34,7 +34,7 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:3001",
+  "proxy": "http://warehouse-service-cloud-1345014679.us-east-2.elb.amazonaws.com:3001",
   "devDependencies": {
     "@testing-library/react-native": "^7.2.0"
   }

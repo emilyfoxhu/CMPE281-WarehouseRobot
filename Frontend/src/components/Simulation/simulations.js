@@ -12,7 +12,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import UserNavbar from '../Navbar/UserNavbar';
 import Link from '@material-ui/core/Link';
-import backendConfig from "../../backendConfig";
+import simulationCloudConfig from "../../simulationCloudConfig";
 
 const useStyles = makeStyles({
     table: {
@@ -31,7 +31,7 @@ class Simulations extends Component {
     }
 
     componentDidMount() {
-        axios.get(`${backendConfig}/aws_robomaker/get_simulation/${localStorage.getItem("email")}`)
+        axios.get(`${simulationCloudConfig}/aws_robomaker/get_simulation/${localStorage.getItem("email")}`)
             .then((response) => {
                 this.setState({simulationList : response.data.message.simulations});
                 this.setState({ accountId: response.data.message.account_id });

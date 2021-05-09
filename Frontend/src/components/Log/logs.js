@@ -12,7 +12,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Link from '@material-ui/core/Link';
-import backendConfig from "../../backendConfig";
+import simulationCloudConfig from "../../simulationCloudConfig";
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -84,7 +84,7 @@ class Logs extends Component {
         let arn = event.target.parentNode.parentNode.childNodes[0].innerText;
         let split_result = arn.split('/');
 
-        axios.post(`${backendConfig}/aws_cloudwatch/get_logs_events`, {
+        axios.post(`${simulationCloudConfig}/aws_cloudwatch/get_logs_events`, {
             streamName: split_result[0],
             simulationName: split_result[1]
         })
@@ -104,7 +104,7 @@ class Logs extends Component {
         let urlArray = url.split('/');
         let sim = urlArray[4];
 
-        axios.get(`${backendConfig}/aws_cloudwatch/get_simulation_logs/${sim}`)
+        axios.get(`${simulationCloudConfig}/aws_cloudwatch/get_simulation_logs/${sim}`)
             .then((response) => {
                 this.setState({ simulationLogList : response.data.message.logStreams });
             })
