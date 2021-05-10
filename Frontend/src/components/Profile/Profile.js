@@ -127,6 +127,7 @@ class Profile extends Component{
                     console.log("Status Code : ", response.status);
                     if(response.status === 200){
                         console.log("successfully updated!");
+                        alert("successfully updated!");
                         localStorage.setItem("email", this.state.email);
                         error.textContent = "successfully updated!";
                     }

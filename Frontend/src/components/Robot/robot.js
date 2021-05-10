@@ -18,6 +18,7 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import LandingPage from "../LandingPage/LandingPage";
+import {withRouter} from 'react-router-dom'
 
 const useStyles = makeStyles({
     table: {
@@ -98,7 +99,7 @@ class Robot extends Component {
                     })
                         .then((response) => {
                             alert("Simulation started successfully.");
-                            window.location.href = "/robot";
+                            this.props.history.push('/robot');
                         })
                         .catch(err => {
                             console.log(err.response);
@@ -126,7 +127,7 @@ class Robot extends Component {
                     })
                         .then((response) => {
                             alert("Simulation started successfully.");
-                            window.location.href = "/robot";
+                            this.props.history.push('/robot');
                         })
                         .catch(err => {
                             console.log(err.response);
@@ -153,7 +154,7 @@ class Robot extends Component {
                     })
                         .then((response) => {
                             alert("Simulation stopped successfully.");
-                            window.location.href = "/robot";
+                            this.props.history.push('/robot');
                         })
                         .catch(err => {
                             console.log(err.response);
@@ -305,4 +306,4 @@ class Robot extends Component {
     }
 }
 
-export default withStyles(useStyles)(Robot);
+export default withRouter(withStyles(useStyles)(Robot));

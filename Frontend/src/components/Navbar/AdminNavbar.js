@@ -13,6 +13,9 @@ import icon from '../../image/icon.png';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { userLogout } from '../../redux/actions/logoutAction';
+import {
+    withRouter
+} from 'react-router-dom'
 
 const useStyles = (theme) => ({
     root: {
@@ -48,7 +51,7 @@ class AdminNavbar extends Component {
         
         const handleHomeButtonEvent = (event) => {
             event.preventDefault();//stop refresh
-            window.location.href = "/admin-dashboard"
+            this.props.history.push('/admin-dashboard')
         };
 
         //handle logout to destroy the cookie
@@ -56,7 +59,7 @@ class AdminNavbar extends Component {
             event.preventDefault();//stop refresh
             window.localStorage.clear();
             this.props.userLogout();
-            window.location.href = "/"
+            window.location.reload(false);
         };
    
         return(
@@ -93,4 +96,4 @@ const mapStateToProps = state => ({
     user: state.logout.user
 });
 
-export default connect(mapStateToProps, { userLogout })(withStyles(useStyles)(AdminNavbar));
+export default withRouter(connect(mapStateToProps, { userLogout })(withStyles(useStyles)(AdminNavbar)));

@@ -13,6 +13,7 @@ import icon from '../../image/icon.png';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { userLogout } from '../../redux/actions/logoutAction';
+import {withRouter} from 'react-router-dom'
 
 const useStyles = (theme) => ({
     root: {
@@ -37,51 +38,58 @@ const useStyles = (theme) => ({
 
 //create the Navbar Component
 class UserNavbar extends Component {
-    constructor() {
-        super();
+    constructor(props, context) {
+        super(props, context);
         this.state = {
+            simulation: false
         }
+
+        this.handleHomeButtonEvent = this.handleHomeButtonEvent.bind(this);
+        this.handleHelp = this.handleHelp.bind(this);
+        this.handleProfile = this.handleProfile.bind(this);
+        this.handleSimulations = this.handleSimulations.bind(this);
+        this.handleLogs = this.handleLogs.bind(this);
+        this.handleNavigation = this.handleNavigation.bind(this);
+        this.handleRobot = this.handleRobot.bind(this);
+        this.handleLogOut = this.handleLogOut.bind(this);
     }
+
+    handleHomeButtonEvent = (event) => {
+        this.props.history.push('/user-dashboard');
+    };
+    handleHelp = (event) => {
+        this.props.history.push('/help');
+    };
+    handleProfile = (event) => {
+        this.props.history.push('/profile');
+    };
+    handleSimulations = (event) => {
+        this.props.history.push('/simulations');
+    };
+
+    handleLogs = (event) => {
+        event.preventDefault();//stop refresh
+        this.props.history.push('/logs');
+    };
+    handleNavigation = (event) => {
+        event.preventDefault();//stop refresh
+        this.props.history.push('/navigation');
+    };
+    handleRobot = (event) => {
+        event.preventDefault();//stop refresh
+        this.props.history.push('/robot');
+    };
+    //handle logout to destroy the cookie
+    handleLogOut = (event) => {
+        event.preventDefault();//stop refresh
+        window.localStorage.clear();
+        this.props.userLogout();
+        window.location.reload(false);
+    };
 
     render() {
         const { classes } = this.props;
-        
-        const handleHomeButtonEvent = (event) => {
-            event.preventDefault();//stop refresh
-            window.location.href = "/user-dashboard"
-        };
-        const handleHelp = (event) => {
-            event.preventDefault();//stop refresh
-            window.location.href = "/help"
-        };
-        const handleProfile = (event) => {
-            event.preventDefault();//stop refresh
-            window.location.href = "/profile"
-        };
-        const handleSimulations = (event) => {
-            event.preventDefault();//stop refresh
-            window.location.href = "/simulations"
-        };
-        const handleLogs = (event) => {
-            event.preventDefault();//stop refresh
-            window.location.href = "/logs"
-        };
-        const handleNavigation = (event) => {
-            event.preventDefault();//stop refresh
-            window.location.href = "/navigation"
-        };
-        const handleRobot = (event) => {
-            event.preventDefault();//stop refresh
-            window.location.href = "/robot"
-        };
-        //handle logout to destroy the cookie
-        const handleLogOut = (event) => {
-            event.preventDefault();//stop refresh
-            window.localStorage.clear();
-            this.props.userLogout();
-            window.location.href = "/"
-        };
-   
+
         return(
             <div>
                 <div className={classes.root}>
@@ -91,20 +99,20 @@ class UserNavbar extends Component {
                                 className={classes.menuButton}
                                 color="inherit" 
                                 aria-label="menu"
-                                onClick={handleHomeButtonEvent}
+                                onClick={this.handleHomeButtonEvent}
                             >
                             <Avatar alt="Splitwise" src={icon}/>
                             </IconButton>
                             <Typography variant="h6" className={classes.title}>
                                 Warehouse Robot
                             </Typography>
-                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleHomeButtonEvent}>Home</Button>
-                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleRobot}>Robot</Button>
-                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleSimulations}>Simulations</Button>
-                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleNavigation}>Navigation</Button>
-                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleProfile}>Profile</Button>
-                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={handleHelp}>Help</Button>
-                            <Button variant="contained" size="large" color="primary" className={classes.button1} onClick={handleLogOut}>Log out</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={this.handleHomeButtonEvent}>Home</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={this.handleRobot}>Robot</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={this.handleSimulations}>Simulations</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={this.handleNavigation}>Navigation</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={this.handleProfile}>Profile</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button} onClick={this.handleHelp}>Help</Button>
+                            <Button variant="contained" size="large" color="primary" className={classes.button1} onClick={this.handleLogOut}>Log out</Button>
                         </Toolbar>
                     </AppBar>
                 </div>
@@ -119,7 +127,7 @@ UserNavbar.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    user: state.logout.user
+    user: state.logout.user,
 });
 
-export default connect(mapStateToProps, { userLogout })(withStyles(useStyles)(UserNavbar));
+export default withRouter(connect(mapStateToProps, { userLogout })(withStyles(useStyles)(UserNavbar)));

@@ -13,6 +13,7 @@ import Paper from '@material-ui/core/Paper';
 import UserNavbar from '../Navbar/UserNavbar';
 import Link from '@material-ui/core/Link';
 import simulationCloudConfig from "../../simulationCloudConfig";
+import {withRouter} from 'react-router-dom'
 
 const useStyles = makeStyles({
     table: {
@@ -44,7 +45,7 @@ class Simulations extends Component {
     viewLogs = (event) => {
         event.preventDefault();//stop refresh
         let sim = event.target.parentNode.parentNode.childNodes[1].innerText;
-        window.location.href = "/logs/" + sim;
+        this.props.history.push('/logs/' + sim);
     }
 
     render() {
@@ -101,4 +102,4 @@ class Simulations extends Component {
     }
 }
 
-export default withStyles(useStyles)(Simulations);
+export default withRouter(withStyles(useStyles)(Simulations));

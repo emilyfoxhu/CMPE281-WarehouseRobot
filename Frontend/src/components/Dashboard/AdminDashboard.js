@@ -21,6 +21,9 @@ import { connect } from 'react-redux';
 import { userSignup } from '../../redux/actions/signupAction';
 import {Pie} from "react-chartjs-2";
 import backendConfig from "../../backendConfig";
+import {
+    withRouter
+} from 'react-router-dom'
 
 const useStyles = (theme) => ({
     root: {
@@ -175,7 +178,7 @@ class AdminDashboard extends Component {
         axios.post(`${backendConfig}/admindashboard/delete`, data)
             .then((response) => {
                 if (response.status === 200){
-                    window.location.href = "/admin-dashboard";
+                    this.props.history.push('/admin-dashboard')
                 }
             })
             .catch(err => {
@@ -192,7 +195,7 @@ class AdminDashboard extends Component {
             .then((response) => {
                 if (response.status === 200){
                     alert("Successfully send billing to the user");
-                    window.location.href = "/admin-dashboard";
+                    this.props.history.push('/admin-dashboard')
                 }
             })
             .catch(err => {
@@ -207,7 +210,7 @@ class AdminDashboard extends Component {
         axios.post(`${backendConfig}/message/delete`, data)
             .then((response) => {
                 if (response.status === 200){
-                    window.location.href = "/admin-dashboard";
+                    this.props.history.push('/admin-dashboard')
                 }
             })
             .catch(err => {
@@ -219,8 +222,8 @@ class AdminDashboard extends Component {
         console.log(this.state);
         //if not logged in go to login page
         let redirectVar = null;
-        if(this.props.signup === "Success_Signup"){ 
-            window.location.href = "/admin-dashboard"
+        if(this.props.signup === "Success_Signup"){
+            this.props.history.push('/admin-dashboard')
         }
         if(!localStorage.getItem('email')){
             redirectVar = <Redirect to= "/"/>
@@ -437,4 +440,4 @@ const mapStateToProps = state => {
 };
 
 //export Login Component
-export default connect(mapStateToProps, { userSignup })(withStyles(useStyles)(AdminDashboard));
+export default withRouter(connect(mapStateToProps, { userSignup })(withStyles(useStyles)(AdminDashboard)));

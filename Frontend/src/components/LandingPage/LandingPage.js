@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { userLogin, adminLogin } from '../../redux/actions/loginAction';
 import { userSignup } from '../../redux/actions/signupAction';
+import {withRouter} from 'react-router-dom'
 
 const useStyles = (theme) => ({
     root: {
@@ -108,7 +109,7 @@ class LandingPage extends Component {
     //handlers
     handleHomeButtonEvent = (event) => {
         event.preventDefault();//stop refresh
-        window.location.href = "/"
+        this.props.history.push('/');
     }
     handleClickOpenL = () => {
         this.setState({open_login : true});
@@ -336,4 +337,4 @@ const mapStateToProps = state => {
 };
 
 //export Login Component
-export default connect(mapStateToProps, { userLogin, adminLogin, userSignup })(withStyles(useStyles)(LandingPage));
+export default withRouter(connect(mapStateToProps, { userLogin, adminLogin, userSignup })(withStyles(useStyles)(LandingPage)));
